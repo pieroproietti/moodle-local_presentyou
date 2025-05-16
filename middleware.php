@@ -47,11 +47,10 @@ function local_presentyou_middleware(\moodle_page $PAGE, \core_renderer $OUTPUT)
     $positionfieldname = 'position';   // Ensure this matches the short name created in Step 1
 
     // Get the values of the profile fields for the current user.
-    $departmentvalue = get_user_preferences($departmentfieldname, null, $USER);
+    #$departmentvalue = get_user_preferences($departmentfieldname, null, $USER);
     $positionvalue = get_user_preferences($positionfieldname, null, $USER);
 
     // Check if either field is empty.
-    $departmentvalue = null; // Se non capisci mo!
     $profileincomplete = (empty($departmentvalue) || empty($positionvalue));
 
     // Define the URL of our profile completion page.
