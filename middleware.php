@@ -22,10 +22,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require('../../config.php');
+// require('../../config.php'); gia caricato
 
 // No direct access.
 defined('MOODLE_INTERNAL') || die();
+
 
 /**
  * Middleware to check if the user's department and position are set.
@@ -38,7 +39,7 @@ function local_presentyou_middleware(\moodle_page $PAGE, \core_renderer $OUTPUT)
     global $CFG, $USER;
 
     // Only apply this logic if a user is logged in.
-    if (!isloggedin()) {
+    if (!isloggedin() || isguestuser()) { // <<< Aggiunto controllo 'isguestuser()'
         return;
     }
 
@@ -46,8 +47,27 @@ function local_presentyou_middleware(\moodle_page $PAGE, \core_renderer $OUTPUT)
     $departmentfieldname = 'department'; // Ensure this matches the short name created in Step 1
     $positionfieldname = 'position';   // Ensure this matches the short name created in Step 1
 
+    // <<< INIZIO BLOCCO AGGIUNTO: Controllo esistenza campi profilo
+    // Questo previene errori se i campi non sono stati creati in Moodle Admin -> User profile fields
+    $departmentfieldexists = get_user_field_info($departmentfieldname) !== false;
+    $positionfieldexists = get_user_field_info($positionfieldname) !== false;
+
+    // Se i campi non esistono, il plugin non può funzionare correttamente.
+    // Lasciamo passare l'utente, l'amministratore dovrà creare i campi.
+    // Oppure potresti reindirizzare a una pagina di errore/setup, ma per semplicità usciamo dal middleware.
+    if (!$departmentfieldexists || !$positionfieldexists) {
+        return;
+    }
+    // <<< FINE BLOCCO AGGIUNTO
+
+
     // Get the values of the profile fields for the current user.
-    $departmentvalue = get_user_preferences($departmentfieldname, null, $USER);
+    /**
+     * 
+     * rimosso DELIBERATAMENTE
+     * $departmentvalue = get_user_preferences($departmentfieldname, null, $USER); 
+     */
+    $departmentvalue = get_user_preferences($departmentfieldname, null, $USER); 
     $positionvalue = get_user_preferences($positionfieldname, null, $USER);
 
     // Check if either field is empty.
@@ -58,6 +78,13 @@ function local_presentyou_middleware(\moodle_page $PAGE, \core_renderer $OUTPUT)
 
     // Get the URL of the logout page.
     $logoutpageurl = new moodle_url('/login/logout.php');
+
+    // <<< INIZIO BLOCCO AGGIUNTO: URLs delle pagine di autenticazione/registrazione da ESCLUDERE
+    // Non vogliamo reindirizzare l'utente se sta usando queste pagine.
+    $selfregistrationurl = new moodle_url('/login/signup.php');
+    $forgotpasswordurl = new moodle_url('/login/forgot_password.php');
+    $confirmemailurl = new moodle_url('/login/confirm.php');
+    // <<< FINE BLOCCO AGGIUNTO
 
     // Check if the user is logged in, their profile is incomplete,
     // AND they are NOT already on the completion page,
@@ -79,9 +106,21 @@ function local_presentyou_middleware(\moodle_page $PAGE, \core_renderer $OUTPUT)
         // We could also redirect them to the 'redirect' parameter if it exists.
         $redirecturl = optional_param('redirect', null, PARAM_LOCALURL);
         if (!empty($redirecturl)) {
-            redirect(new moodle_url($redirecturl));
+            // <<< INIZIO BLOCCO AGGIUNTO: Validazione URL di redirect per sicurezza
+            // Assicurati che l'URL sia valido e interno al sito Moodle
+            if (is_valid_internal_url($redirecturl, true)) {
+                redirect(new moodle_url($redirecturl));
+            } else {
+                // Fallback a una pagina sicura (dashboard) se l'URL di redirect non è valido
+                redirect(new moodle_url('/my/'));
+            }
+            // <<< FINE BLOCCO AGGIUNTO
         } else {
             redirect(new moodle_url('/my/')); // Default to dashboard
         }
     }
 }
+
+// Nota: nessuna altra istruzione o chiamata a funzione al di fuori della funzione
+// local_presentyou_middleware() in un file middleware.php.
+

@@ -65,7 +65,7 @@ class complete_profile_form extends \moodleform {
         // Add a cancel button that acts as a logout link
         $buttonarray[] = $mform->createElement('cancel', 'cancelbutton', get_string('logout'));
         $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
-        $mform->closeHeader();
+        // $mform->closeHeader(); NON USATA
     }
 
     /**

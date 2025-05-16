@@ -15,20 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information for Presentyou
+ * Solo per bloccare l'accesso diretto
  *
  * @package    local_presentyou
  * @copyright  2025 Piero Proietti <piero.proietti@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'local_presentyou';
-$plugin->version = 2025051603.08; // YYYYMMDD Revision - Update this when you make changes
-$plugin->requires = 2022112800; // Moodle 4.1 (or your target Moodle version)
-$plugin->maturity = MATURITY_STABLE; // MATURITY_ALPHA, MATURITY_BETA, MATURITY_RC, MATURITY_STABLE
-$plugin->release = 'v1.0';
+// Define the target URL
+$targeturl = new moodle_url('/local/presentyou/complete_profile.php');
 
-// This line tells Moodle to load our middleware.php file on every request.
-$plugin->middlewarefile = true;
+// Redirect the user
+redirect($targeturl);
+
+// redirect() normalmente termina lo script, ma aggiungere die() è una sicurezza extra.
+die();
