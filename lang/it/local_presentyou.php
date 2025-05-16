@@ -1,0 +1,45 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * English language pack for Presentyou
+ *
+ * @package    local_presentyou
+ * @category   string
+ * @copyright  2025 Piero Proietti <piero.proietti@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$string['pluginname'] = 'PresentYou Profile Completion';
+$string['completeprofiletitle'] = 'Completa il tuo profilo';
+$string['completeprofileheading'] = 'Benvenuto - Completa il tuo profile';
+$string['completeprofileintro'] = 'Seleziona il Dipartimento e la Posizione per continuare.';
+$string['department'] = 'Dipartimento';
+$string['position'] = 'Posizione';
+$string['selectdepartment'] = '--- Seleziona Dipartimento ---';
+$string['selectposition'] = '--- Seleziona Posizione ---';
+$string['confirm'] = 'Confirma';
+$string['logout'] = 'Logout'; // Re-using core logout string might be fine
+$string['required'] = 'Questo campo è obbligatorio.';
+$string['profilesaved'] = 'Le informazioni sul tuo profilo sono state salvate.';
+$string['saveprofileerror'] = 'Si è verificatp un errore durante il salvataggio del profilo.';
+$string['departmentdown'] = 'Sotto';
+$string['departmentupper'] = 'Sopra';
+$string['positionteacher'] = 'Insegnante';
+$string['positionjanitor'] = 'Bidello';
+$string['invalidselection'] = 'Selezione non valida.';
