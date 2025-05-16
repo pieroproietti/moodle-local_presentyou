@@ -31,6 +31,7 @@ $string['completeprofileheading'] = 'Welcome - Complete Your Profile';
 $string['completeprofileintro'] = 'Please select your department and position to continue.';
 $string['department'] = 'Department';
 $string['position'] = 'Position';
+$string['privacy:metadata'] = 'Privacy:metadata';
 $string['selectdepartment'] = '--- Select Department ---';
 $string['selectposition'] = '--- Select Position ---';
 $string['confirm'] = 'Confirm';

@@ -22,6 +22,7 @@ require_once($CFG->libdir.'/formslib.php');
 
 /**
  * Form for users to select their department and position.
+ * @package local_presentyou
  */
 class complete_profile_form extends \moodleform {
 

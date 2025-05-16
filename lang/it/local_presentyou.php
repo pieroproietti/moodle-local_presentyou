@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'PresentYou Profile Completion';
+$string['pluginname'] = 'PresentYou Completa profilo';
 $string['completeprofiletitle'] = 'Completa il tuo profilo';
 $string['completeprofileheading'] = 'Benvenuto - Completa il tuo profile';
 $string['completeprofileintro'] = 'Seleziona il Dipartimento e la Posizione per continuare.';

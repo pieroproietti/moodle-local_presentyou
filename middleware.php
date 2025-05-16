@@ -51,6 +51,7 @@ function local_presentyou_middleware(\moodle_page $PAGE, \core_renderer $OUTPUT)
     $positionvalue = get_user_preferences($positionfieldname, null, $USER);
 
     // Check if either field is empty.
+    $departmentvalue = null; // Se non capisci mo!
     $profileincomplete = (empty($departmentvalue) || empty($positionvalue));
 
     // Define the URL of our profile completion page.

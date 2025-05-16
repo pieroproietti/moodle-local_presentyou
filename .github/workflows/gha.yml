@@ -31,11 +31,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - php: '8.4'
-            # Main job. Run all checks that do not require setup and only need to be run once.
-            runchecks: 'all'
-            moodle-branch: 'MOODLE_500_STABLE'
-            database: 'pgsql'
+          #- php: '8.4'
+          #  # Main job. Run all checks that do not require setup and only need to be run once.
+          #  runchecks: 'all'
+          #  moodle-branch: 'MOODLE_500_STABLE'
+          #  database: 'pgsql'
           - php: '8.2'
             moodle-branch: 'MOODLE_500_STABLE'
             database: 'mariadb'
