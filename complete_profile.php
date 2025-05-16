@@ -58,47 +58,65 @@ if ($form->is_cancelled()) {
     $redirecturl = $fromform->redirect; // Get the saved redirect URL
 
     // Validate again against profile fields just in case (extra safety).
-    $departmentfield = get_user_field_info('department');
-    $positionfield = get_user_field_info('position');
+    // Use the correct API to get custom field information.
+    $departmentfield = \core_user\field\manager::get_custom_field('department');
+    $positionfield = \core_user\field\manager::get_custom_field('position');
 
     $validationerror = false;
-    if (!$departmentfield || !array_key_exists($department, $departmentfield->customdata['options'])) {
+    $errormessage = ''; // Per un messaggio di errore più specifico
+
+    // Check if fields exist and if selected values are valid options.
+    if (!$departmentfield) {
+        // Questo caso dovrebbe essere gestito dal middleware o dal setup,
+        // ma è una sicurezza in più.
         $validationerror = true;
-        // Log error or display message if needed
-        // error_log("local_presentyou: Invalid department selected by user {$USER->id}: $department");
+        $errormessage = get_string('saveprofileerror', 'local_presentyou') . ': ' . get_string('departmentfieldmissing', 'local_presentyou'); // Stringa da aggiungere in lang/en
+        // error_log("local_presentyou: Department field is missing but user submitted form.");
+    } elseif (!$departmentfield->is_valid_value($department)) { // Usa il metodo is_valid_value del campo
+         $validationerror = true;
+         $errormessage = get_string('saveprofileerror', 'local_presentyou') . ': ' . get_string('invalidselection', 'local_presentyou'); // Stringa esistente
+         // error_log("local_presentyou: Invalid department selected by user {$USER->id}: $department");
     }
-     if (!$positionfield || !array_key_exists($position, $positionfield->customdata['options'])) {
-        $validationerror = true;
-        // error_log("local_presentyou: Invalid position selected by user {$USER->id}: $position");
+
+
+     if (!$positionfield) {
+         $validationerror = true;
+         $errormessage = get_string('saveprofileerror', 'local_presentyou') . ': ' . get_string('positionfieldmissing', 'local_presentyou'); // Stringa da aggiungere in lang/en
+         // error_log("local_presentyou: Position field is missing but user submitted form.");
+     } elseif (!$positionfield->is_valid_value($position)) { // Usa il metodo is_valid_value del campo
+         $validationerror = true;
+         $errormessage = get_string('saveprofileerror', 'local_presentyou') . ': ' . get_string('invalidselection', 'local_presentyou'); // Stringa esistente
+         // error_log("local_presentyou: Invalid position selected by user {$USER->id}: $position");
      }
+
 
     if (!$validationerror) {
         // Save the selected values to the user's profile fields.
+        // set_user_preference works for custom user fields.
         set_user_preference('department', $department, $USER->id);
         set_user_preference('position', $position, $USER->id);
 
-        // Show a success notification.
-        // \core\notification::success(get_string('profilesaved', 'local_presentyou')); // Doesn't show until next page if redirecting
+        // Show a success notification. (Will be shown on the next page)
+        // \core\notification::success(get_string('profilesaved', 'local_presentyou'));
 
         // Redirect the user.
-        if (!empty($redirecturl)) {
-            // Redirect to the page they were trying to reach.
-            redirect(new moodle_url($redirecturl, ['profilecomplete' => 1])); // Add flag to prevent immediate re-redirect if middleware fires again too quickly
-        } else {
-            // Default redirect to dashboard if no redirect URL was saved.
-            redirect(new moodle_url('/my/', ['profilecomplete' => 1]));
-        }
+        // In questo scenario "pagina di benvenuto obbligatoria", reindirizzare alla dashboard ha più senso.
+        // Se l'utente è arrivato qui dal middleware dopo login, non sta "continuando a navigare" verso un URL specifico.
+        redirect(new moodle_url('/my/'));
+
 
     } else {
-         // Handle validation error (should be caught by form validation, but extra check).
-         // The form will typically redisplay with errors.
-         // Optionally add an error message manually if needed.
-         \core\notification::error(get_string('saveprofileerror', 'local_presentyou'));
+        // Handle validation error.
+        // The form should redisplay with its own validation errors,
+        // but displaying a general notification helps.
+        \core\notification::error($errormessage);
+        // Re-display the form with errors. The form object already has the submitted data and errors.
+        // The code continues to $form->display() below.
     }
 
 } else {
-    // Form has not been submitted yet, or submission failed validation.
-    // (The form->display() call below handles rendering).
+    // Form has not been submitted yet, or submission failed validation and is being re-displayed.
+    // (The $form->display() call below handles rendering).
 }
 
 // Output the page header.
@@ -112,3 +130,7 @@ $form->display();
 
 // Output the page footer.
 echo $OUTPUT->footer();
+
+// Aggiungi queste stringhe (o simili) in lang/en/local_presentyou.php
+// $string['departmentfieldmissing'] = 'Department profile field is missing.';
+// $string['positionfieldmissing'] = 'Position profile field is missing.';

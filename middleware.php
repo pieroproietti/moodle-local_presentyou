@@ -42,85 +42,39 @@ function local_presentyou_middleware(\moodle_page $PAGE, \core_renderer $OUTPUT)
     if (!isloggedin() || isguestuser()) { // <<< Aggiunto controllo 'isguestuser()'
         return;
     }
-
-    // Define the short names of the profile fields we're checking.
-    $departmentfieldname = 'department'; // Ensure this matches the short name created in Step 1
-    $positionfieldname = 'position';   // Ensure this matches the short name created in Step 1
-
-    // <<< INIZIO BLOCCO AGGIUNTO: Controllo esistenza campi profilo
-    // Questo previene errori se i campi non sono stati creati in Moodle Admin -> User profile fields
-    $departmentfieldexists = get_user_field_info($departmentfieldname) !== false;
-    $positionfieldexists = get_user_field_info($positionfieldname) !== false;
-
-    // Se i campi non esistono, il plugin non può funzionare correttamente.
-    // Lasciamo passare l'utente, l'amministratore dovrà creare i campi.
-    // Oppure potresti reindirizzare a una pagina di errore/setup, ma per semplicità usciamo dal middleware.
-    if (!$departmentfieldexists || !$positionfieldexists) {
-        return;
-    }
-    // <<< FINE BLOCCO AGGIUNTO
-
-
-    // Get the values of the profile fields for the current user.
-    /**
-     * 
-     * rimosso DELIBERATAMENTE
-     * $departmentvalue = get_user_preferences($departmentfieldname, null, $USER); 
-     */
-    $departmentvalue = get_user_preferences($departmentfieldname, null, $USER); 
-    $positionvalue = get_user_preferences($positionfieldname, null, $USER);
-
-    // Check if either field is empty.
-    $profileincomplete = (empty($departmentvalue) || empty($positionvalue));
-
     // Define the URL of our profile completion page.
     $completionpageurl = new moodle_url('/local/presentyou/complete_profile.php');
-
-    // Get the URL of the logout page.
+    
+    // Get the URLs of pages we should NOT interrupt.
     $logoutpageurl = new moodle_url('/login/logout.php');
-
-    // <<< INIZIO BLOCCO AGGIUNTO: URLs delle pagine di autenticazione/registrazione da ESCLUDERE
-    // Non vogliamo reindirizzare l'utente se sta usando queste pagine.
     $selfregistrationurl = new moodle_url('/login/signup.php');
     $forgotpasswordurl = new moodle_url('/login/forgot_password.php');
     $confirmemailurl = new moodle_url('/login/confirm.php');
-    // <<< FINE BLOCCO AGGIUNTO
+    $loginpageurl = new moodle_url('/login/index.php'); // Non reindirizzare dalla pagina di login stessa
 
-    // Check if the user is logged in, their profile is incomplete,
+    // Check if the user is logged in, is NOT a guest,
     // AND they are NOT already on the completion page,
-    // AND they are NOT trying to logout.
-    if (isloggedin() && $profileincomplete &&
+    // AND they are NOT trying to access any of the excluded auth-related pages.
+    // In TUTTI gli altri casi, reindirizza alla pagina di completamento profilo.
+    if (isloggedin() && !isguestuser() &&
         !$PAGE->url->equals($completionpageurl, true) &&
-        !$PAGE->url->equals($logoutpageurl, true)) {
+        !$PAGE->url->equals($logoutpageurl, true) &&
+        !$PAGE->url->equals($selfregistrationurl, true) &&
+        !$PAGE->url->equals($forgotpasswordurl, true) &&
+        !$PAGE->url->equals($confirmemailurl, true) &&
+        !$PAGE->url->equals($loginpageurl, true)
+       ) {
 
-        // Redirect the user to the profile completion page.
-        // Pass the original requested URL so we can redirect them back later (optional).
-        $urltogo = new moodle_url($completionpageurl, ['redirect' => $PAGE->url->out_as_local_url(false)]);
-        redirect($urltogo);
+            // Reindirizza l'utente alla pagina di completamento profilo.
+            // Salviamo l'URL originale come parametro 'redirect' - utile per complete_profile.php DOPO il salvataggio.
+            $urltogo = new moodle_url($completionpageurl, ['redirect' => $PAGE->url->out(false)]);
+            redirect($urltogo);
+       }
 
-    } elseif (isloggedin() && !$profileincomplete &&
-              $PAGE->url->equals($completionpageurl, true)) {
-
-        // If the user *has* completed their profile but somehow landed on the completion page,
-        // redirect them away (e.g., to the dashboard).
-        // We could also redirect them to the 'redirect' parameter if it exists.
-        $redirecturl = optional_param('redirect', null, PARAM_LOCALURL);
-        if (!empty($redirecturl)) {
-            // <<< INIZIO BLOCCO AGGIUNTO: Validazione URL di redirect per sicurezza
-            // Assicurati che l'URL sia valido e interno al sito Moodle
-            if (is_valid_internal_url($redirecturl, true)) {
-                redirect(new moodle_url($redirecturl));
-            } else {
-                // Fallback a una pagina sicura (dashboard) se l'URL di redirect non è valido
-                redirect(new moodle_url('/my/'));
-            }
-            // <<< FINE BLOCCO AGGIUNTO
-        } else {
-            redirect(new moodle_url('/my/')); // Default to dashboard
-        }
-    }
 }
 
-// Nota: nessuna altra istruzione o chiamata a funzione al di fuori della funzione
-// local_presentyou_middleware() in un file middleware.php.
+// Nota: Non è necessario controllare l'esistenza dei campi profilo qui
+// dato che l'obiettivo è reindirizzare SEMPRE. Eventuali problemi con i campi
+// si manifesteranno (più correttamente) nella pagina complete_profile.php.
+// Ho rimosso quel controllo per questa specifica logica "reindirizza sempre".
 
