@@ -60,7 +60,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir.'/formslib.php');
 
 // <<< AGGIUNGI QUESTA RIGA
-use core_user\field\manager; // <<< Assicurati che QUESTA riga ci sia
+use core\user\field\manager;
 // >>> FINE RIGA AGGIUNTA
 
 /**
@@ -120,8 +120,8 @@ class complete_profile_form extends \moodleform {
         $errors = parent::validation($data, $files);
 
         // Get the custom field objects using the correct API.
-        $departmentfield = \core_user\field\manager::get_custom_field('department');
-        $positionfield = \core_user\field\manager::get_custom_field('position');
+        $departmentfield = \core\user\field\manager::get_custom_field('department');
+        $positionfield = \core\user\field\manager::get_custom_field('position');
 
         // Validate the submitted values against the allowed options for the profile fields.
         // Use the field object's is_valid_value method.
@@ -592,8 +592,8 @@ function local_presentyou_middleware(\moodle_page $PAGE, \core_renderer $OUTPUT)
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_presentyou';
-$plugin->version = 2025051603.15; // YYYYMMDD Revision - Update this when you make changes
-$plugin->requires = 2022112800; // Moodle 4.1 (or your target Moodle version)
+$plugin->version = 2025051702; // YYYYMMDD Revision - Update this when you make changes
+$plugin->requires = 2025041400.05; // Moodle 5+ last version
 $plugin->maturity = MATURITY_STABLE; // MATURITY_ALPHA, MATURITY_BETA, MATURITY_RC, MATURITY_STABLE
 $plugin->release = 'v1.0';
 

@@ -26,13 +26,21 @@ presentyou/
 ├── sunto.py
 └── version.php
 ```
-## Csmèi personalizzati
+## Campi personalizzati
 Creare utilizzando l'interfcaccia web si `Site administration->Users->Users profile fiels` i campi: `department` e `position`.
 
 
+# git
+Potete liberamente clonare questa repository con il comando: 
+
+`git clone https://github.com/pieroproietti/moodle-local_presentyou`
+
+Per un uso più professionale se ne consiglia, preventivamente, il [fork](https://github.com/pieroproietti/moodle-local_presentyou/fork).
+
+In tal modo avrete una copia personale e potrete modificare liberamente, effeturare dell `REQUEST PULL` sulla versione originale ed avere la possibilità di aggiornare all'originale.
 
 # AI 
 Utilizzo [gemini 2.5 flash](https://gemini.google.com/) per analisi e codice.
 
 Per fornire il contesto, utilizzare il file [SUNTO.md](./SUNTO.md) che fornisce all'AI tutto il codice php. 
-SUNTO.md viene generato automaticamente dallo script `sunto.py`
+SUNTO.md viene generato automaticamente dallo script `sunto.py` presente in questa repository. Digirare: `./sunto.py .` dall'interno della repository stessa.
