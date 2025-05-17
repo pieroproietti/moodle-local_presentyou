@@ -25,21 +25,18 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'PresentYou Completa profilo';
+$string['pluginname'] = 'PresentYou Completa il tuo profilo';
 $string['completeprofiletitle'] = 'Completa il tuo profilo';
-$string['completeprofileheading'] = 'Benvenuto - Completa il tuo profile';
-$string['completeprofileintro'] = 'Seleziona il Dipartimento e la Posizione per continuare.';
+$string['completeprofileheading'] = 'Benvenuto - Completa il tuo profilo';
+$string['completeprofileintro'] = 'Seleziona il tuo dipartimento e posizione per contuniare.';
 $string['department'] = 'Dipartimento';
 $string['position'] = 'Posizione';
-$string['selectdepartment'] = '--- Seleziona Dipartimento ---';
-$string['selectposition'] = '--- Seleziona Posizione ---';
+$string['privacy:metadata'] = 'Privacy:metadata';
+$string['selectdepartment'] = '--- Selezione Dipartimento ---';
+$string['selectposition'] = '--- Selezione Posizione ---';
 $string['confirm'] = 'Confirma';
-$string['logout'] = 'Logout'; // Re-using core logout string might be fine
-$string['required'] = 'Questo campo è obbligatorio.';
-$string['profilesaved'] = 'Le informazioni sul tuo profilo sono state salvate.';
-$string['saveprofileerror'] = 'Si è verificatp un errore durante il salvataggio del profilo.';
-$string['departmentdown'] = 'Sotto';
-$string['departmentupper'] = 'Sopra';
-$string['positionteacher'] = 'Insegnante';
-$string['positionjanitor'] = 'Bidello';
+//$string['logout'] = 'Logout'; // Re-using core logout string might be fine
+$string['required'] = 'Questo campo è richiesto.';
+$string['profilesaved'] = 'Le tue informazioni di profilo sono state salvate.';
+$string['saveprofileerror'] = 'Errore durante il salvataggio delle informazioni di profilo.';
 $string['invalidselection'] = 'Selezione non valida.';

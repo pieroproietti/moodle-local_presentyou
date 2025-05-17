@@ -21,7 +21,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir.'/formslib.php');
 
 // <<< AGGIUNGI QUESTA RIGA
-use core_user\field\manager; // Importa la classe manager del gestore campi utente
+use core_user\field\manager; // <<< Assicurati che QUESTA riga ci sia
 // >>> FINE RIGA AGGIUNTA
 
 /**
