@@ -25,10 +25,10 @@ presentyou/
 └── version.php
 ```
 
-Ho creato in `Site administration->Users->Users profile fiels` i campi: `department` e `position`.
+Creare utilizzando l'interfcaccia web si `Site administration->Users->Users profile fiels` i campi: `department` e `position`.
 
 # AI 
-Sto utilizzando [gemini 2.5 flash](https://gemini.google.com/) per analisi e codice.
+Utilizzo [gemini 2.5 flash](https://gemini.google.com/) per analisi e codice.
 
 Per fornire il contesto, utilizzare il file [SUNTO.md](./SUNTO.md) che fornisce all'AI tutto il codice php. 
 SUNTO.md viene generato automaticamente dallo script `sunto.py`
