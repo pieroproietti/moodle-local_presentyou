@@ -21,7 +21,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir.'/formslib.php');
 
 // <<< AGGIUNGI QUESTA RIGA
-use core_user\field\manager; // <<< Assicurati che QUESTA riga ci sia
+use core\user\field\manager;
 // >>> FINE RIGA AGGIUNTA
 
 /**
@@ -81,8 +81,8 @@ class complete_profile_form extends \moodleform {
         $errors = parent::validation($data, $files);
 
         // Get the custom field objects using the correct API.
-        $departmentfield = \core_user\field\manager::get_custom_field('department');
-        $positionfield = \core_user\field\manager::get_custom_field('position');
+        $departmentfield = \core\user\field\manager::get_custom_field('department');
+        $positionfield = \core\user\field\manager::get_custom_field('position');
 
         // Validate the submitted values against the allowed options for the profile fields.
         // Use the field object's is_valid_value method.
