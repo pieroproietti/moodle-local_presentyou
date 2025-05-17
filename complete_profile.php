@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core\user\field\manager; // Assicurati che questa riga sia qui
+
 require_once('../../config.php');
 require_once($CFG->libdir.'/adminlib.php'); // Needed for nav
 require_once(__DIR__ . '/classes/form/complete_profile_form.php');
@@ -59,8 +61,8 @@ if ($form->is_cancelled()) {
 
     // Validate again against profile fields just in case (extra safety).
     // Use the correct API to get custom field information.
-    $departmentfield = \core_user\field\manager::get_custom_field('department');
-    $positionfield = \core_user\field\manager::get_custom_field('position');
+    $departmentfield = \core\user\field\manager::get_custom_field('department');
+    $positionfield = \core\user\field\manager::get_custom_field('position');
 
     $validationerror = false;
     $errormessage = ''; // Per un messaggio di errore più specifico

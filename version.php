@@ -25,10 +25,12 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_presentyou';
-$plugin->version = 2025051702; // YYYYMMDD Revision - Update this when you make changes
+$plugin->version = 2025051706; // YYYYMMDD Revision - Update this when you make changes
 $plugin->requires = 2025041400.05; // Moodle 5+ last version
 $plugin->maturity = MATURITY_STABLE; // MATURITY_ALPHA, MATURITY_BETA, MATURITY_RC, MATURITY_STABLE
 $plugin->release = 'v1.0';
+$departmentfieldmissing= 'Manca il campo del Dipartimento';
+$positionfieldmissing= 'Manca il campo della Posizione';
 
 // This line tells Moodle to load our middleware.php file on every request.
 $plugin->middlewarefile = true;
