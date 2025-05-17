@@ -1,10 +1,7 @@
 # README
-I'm building local_presentyou plugin for Moodle 5.+, using Moodle Plugin Development.
-I need the user, when login in the site, will confirm it's:
-* department selecting from departments = ['Down', 'Upper]
-* position selectting from positions = ['Teacher', 'Janitor]
+Sto scrivendo un plugin denominato `local_presentyou` di tipo `local` per Moodle 5.+, usando Moodle Plugin Development ed intelligenza artificiale.
 
-On the form will be two selectbox for department and position, and two buttons: ['Confirm', 'Logout']
+Mi occorre che all'utente, ad ogni nuovo login, sia presentato un form con due campi `department` e `position` su una selectbox, e due bottoni: `Confirm` e `Logout`.
 
 All the users, also the admin must to set it, without execute logout.
 
