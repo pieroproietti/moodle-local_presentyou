@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_presentyou';
 $plugin->version = 2025051701; // YYYYMMDD Revision - Update this when you make changes
-$plugin->requires = 2022112800; // Moodle 4.1 (or your target Moodle version)
+$plugin->requires = 2025041400.05; // Moodle 5+ last version
 $plugin->maturity = MATURITY_STABLE; // MATURITY_ALPHA, MATURITY_BETA, MATURITY_RC, MATURITY_STABLE
 $plugin->release = 'v1.0';
 
