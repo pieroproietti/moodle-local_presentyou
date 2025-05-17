@@ -5,7 +5,7 @@ Sto scrivendo un plugin denominato `local_presentyou` di tipo `local` per Moodle
 
 Mi occorre che all'utente, ad ogni nuovo login, sia presentato un form con due campi `department` e `position` su una selectbox, e due bottoni: `Confirm` e `Logout`.
 
-Tutti gli utenti, incluso `admin` devono confermari di campi, senza la conferma esegui il logout.
+Tutti gli utenti, incluso `admin`, devono essere automaticamente reindirizzati sul form e confermare i campi `department` e `position`. In caso di nessuna conferma, si esegue automaticamente il logout.
 
 ## Struttura
 ```ascii
@@ -27,7 +27,7 @@ presentyou/
 └── version.php
 ```
 ## Campi personalizzati
-Creare utilizzando l'interfcaccia web si `Site administration->Users->Users profile fiels` i campi: `department` e `position`.
+Creare utilizzando l'interfaaccia web si `Site administration->Users->Users profile fiels` i campi: `department` e `position`.
 
 
 # git
