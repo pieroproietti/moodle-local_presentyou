@@ -1,11 +1,13 @@
 # README
+
+## Prompt
 Sto scrivendo un plugin denominato `local_presentyou` di tipo `local` per Moodle 5.+, usando Moodle Plugin Development ed intelligenza artificiale.
 
 Mi occorre che all'utente, ad ogni nuovo login, sia presentato un form con due campi `department` e `position` su una selectbox, e due bottoni: `Confirm` e `Logout`.
 
-All the users, also the admin must to set it, without execute logout.
+Tutti gli utenti, incluso `admin` devono confermari di campi, senza la conferma esegui il logout.
 
-# Structure
+## Struttura
 ```ascii
 presentyou/
 ├── classes/
@@ -24,8 +26,10 @@ presentyou/
 ├── sunto.py
 └── version.php
 ```
-
+## Csmèi personalizzati
 Creare utilizzando l'interfcaccia web si `Site administration->Users->Users profile fiels` i campi: `department` e `position`.
+
+
 
 # AI 
 Utilizzo [gemini 2.5 flash](https://gemini.google.com/) per analisi e codice.
