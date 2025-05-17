@@ -20,6 +20,10 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
 
+// <<< AGGIUNGI QUESTA RIGA
+use core\user\field\manager;
+// >>> FINE RIGA AGGIUNTA
+
 /**
  * Form for users to select their department and position.
  * @package local_presentyou
@@ -76,17 +80,35 @@ class complete_profile_form extends \moodleform {
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
-        // Re-check if the selected values are actually valid options for the profile fields.
-        $departmentfield = get_user_field_info('department'); // Get info about the profile field
-        if ($departmentfield && !empty($data['department']) && !array_key_exists($data['department'], $departmentfield->customdata['options'])) {
-             $errors['department'] = get_string('invalidselection', 'local_presentyou');
+        // Get the custom field objects using the correct API.
+        $departmentfield = \core\user\field\manager::get_custom_field('department');
+        $positionfield = \core\user\field\manager::get_custom_field('position');
+
+        // Validate the submitted values against the allowed options for the profile fields.
+        // Use the field object's is_valid_value method.
+
+        // Only validate if the field exists (should exist if setup is done)
+        // AND if a value was actually submitted (the 'required' rule handles empty,
+        // but this checks if the submitted non-empty value is valid).
+        if ($departmentfield && isset($data['department']) && !empty($data['department'])) {
+             if (!$departmentfield->is_valid_value($data['department'])) {
+                 $errors['department'] = get_string('invalidselection', 'local_presentyou');
+             }
+        } else if ($departmentfield && empty($data['department']) && $departmentfield->is_required()) {
+             // This case should ideally be caught by parent::validation() due to addRule('required'),
+             // but good to double check if needed based on how required is handled.
+             // For simple select 'required', parent::validation is enough.
         }
 
-        $positionfield = get_user_field_info('position'); // Get info about the profile field
-         if ($positionfield && !empty($data['position']) && !array_key_exists($data['position'], $positionfield->customdata['options'])) {
-             $errors['position'] = get_string('invalidselection', 'local_presentyou');
+
+         if ($positionfield && isset($data['position']) && !empty($data['position'])) {
+             if (!$positionfield->is_valid_value($data['position'])) {
+                 $errors['position'] = get_string('invalidselection', 'local_presentyou');
+             }
+         } else if ($positionfield && empty($data['position']) && $positionfield->is_required()) {
+             // Similar to department, parent::validation likely covers this.
          }
 
         return $errors;
-    }
+    }    
 }
