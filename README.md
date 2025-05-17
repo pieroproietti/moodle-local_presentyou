@@ -1,9 +1,10 @@
 # README
 
-## Prompt
-Sto scrivendo un plugin denominato `local_presentyou` di tipo `local` per Moodle 5.+, usando Moodle Plugin Development ed intelligenza artificiale.
+Sto scrivendo un plugin denominato `local_presentyou` di tipo `local` per Moodle 5.+, usando Visual Studio Code con l'estensione Moodle Plugin Development e l'intelligenza artificiale.
 
-Mi occorre che all'utente, ad ogni nuovo login, sia presentato un form con due campi `department` e `position` su una selectbox, e due bottoni: `Confirm` e `Logout`.
+Mi occorre che all'utente, ad ogni nuovo login, sia presentato un form con due campi `department` e `position` come selectbox, e due bottoni: `Confirm` e `Logout`.
+
+I campi sono stati creati come `Campi personalizzati` opzione menu.
 
 Tutti gli utenti, incluso `admin`, devono essere automaticamente reindirizzati sul form e confermare i campi `department` e `position`. In caso di nessuna conferma, si esegue automaticamente il logout.
 
