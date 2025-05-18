@@ -15,22 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information for Presentyou
+ * TODO describe file middleware
  *
  * @package    local_presentyou
  * @copyright  2025 Piero Proietti <piero.proietti@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+// INTENTIONALLY BLANK
 
-$plugin->component = 'local_presentyou';
-$plugin->version = 2025051801; // YYYYMMDD Revision - Update this when you make changes
-$plugin->requires = 2025041400.05; // Moodle 5+ last version
-$plugin->maturity = MATURITY_STABLE; // MATURITY_ALPHA, MATURITY_BETA, MATURITY_RC, MATURITY_STABLE
-$plugin->release = 'v1.0';
-$departmentfieldmissing= 'Manca il campo del Dipartimento';
-$positionfieldmissing= 'Manca il campo della Posizione';
-
-// This line tells Moodle to load our middleware.php file on every request.
-$plugin->middlewarefile = true;

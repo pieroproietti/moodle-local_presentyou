@@ -40,3 +40,6 @@ $string['required'] = 'This field is required.';
 $string['profilesaved'] = 'Your profile information has been saved.';
 $string['saveprofileerror'] = 'An error occurred while saving your profile information.';
 $string['invalidselection'] = 'Invalid selection.';
+$string['departmentfieldmissing'] = 'Department profile field is missing or misconfigured.';
+$string['positionfieldmissing'] = 'Position profile field is missing or misconfigured.';
+$string['configurecustomfields'] = 'Please contact an administrator to configure the required custom profile fields.';
