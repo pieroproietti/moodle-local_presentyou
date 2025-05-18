@@ -46,3 +46,6 @@ Utilizzo [gemini 2.5 flash](https://gemini.google.com/) per analisi e codice.
 Per fornire il contesto, utilizzare il file [SUNTO.md](./SUNTO.md) che fornisce all'AI tutto il codice php del plugin. 
 
 SUNTO.md viene generato automaticamente dallo script `sunto.py` presente in questa repository. Digirare: `./sunto.py .` dall'interno della repository stessa.
+
+# moodledev (live-iso)
+* [moodledev](https://github.com/pieroproietti/moodledev)
