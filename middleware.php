@@ -29,7 +29,9 @@ defined('MOODLE_INTERNAL') || die();
 
 
 /**
- * Middleware: Dopo il login ci reindirizza su /local/presentyou/complete_profile.php
+ * Middleware: dopo il login ci reindirizza SEMPRE 
+ *             su /local/presentyou/complete_profile.php
+ *             per qualche motivo NON succede!
  *
  * @param \moodle_page $PAGE The current Moodle page object.
  * @param \core_renderer $OUTPUT The current Moodle output object.
