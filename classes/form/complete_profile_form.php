@@ -19,8 +19,9 @@ namespace local_presentyou\form;
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/formslib.php');
+// Include the library for user profile fields
+require_once($CFG->dirroot . '/user/profile/lib.php'); // This library contains functions for user profile fields
 
-use core\user\field\manager; // Assicurati che questa riga sia qui
 
 /**
  * Form for users to select their department and position.
@@ -28,71 +29,107 @@ use core\user\field\manager; // Assicurati che questa riga sia qui
  */
 class complete_profile_form extends \moodleform {
 
+    // Store field definitions
+    protected $departmentfield = null;
+    protected $positionfield = null;
+
     /**
      * Define the form elements.
      */
     protected function definition() {
-        global $CFG, $USER;
+        global $CFG, $USER, $DB;
 
         $mform = $this->_form;
 
         // --- Department Select ---
         $departmentoptions = ['' => get_string('selectdepartment', 'local_presentyou')]; // Start with empty option
-        // Get the custom department field
-        $departmentfield = manager::get_custom_field('department');
+        $currentdepartment = '';
 
-        if ($departmentfield && $departmentfield->get_field_type() === 'menu') {
-            // Check if it's a menu type field and get its options
-            $fieldoptions = $departmentfield->get_field_options(); // This method gets the value => label array
-            if (!empty($fieldoptions)) {
-                $departmentoptions += $fieldoptions; // Add custom field options to the form options
-            } else {
-                 // Handle case where the field exists but has no options defined
-                 debugging('Custom profile field "department" found but has no options.', DEBUG_DEVELOPER);
-                 // Optionally add a disabled warning or prevent form display
-                 // For now, the select will just show the empty option.
+        // Get the custom department field definition from the database
+        $this->departmentfield = $DB->get_record('user_info_field', array('shortname' => 'department'));
+
+        if ($this->departmentfield && $this->departmentfield->datatype === 'menu') {
+            // Menu options are stored as newline-separated values in param1
+            $fieldoptions = explode("\n", $this->departmentfield->param1);
+            $options_formatted = [];
+            foreach ($fieldoptions as $option) {
+                 $option = trim($option);
+                 if ($option !== '') {
+                      // The key and value are the same for simple menu options
+                     $options_formatted[$option] = $option;
+                 }
             }
+
+            if (!empty($options_formatted)) {
+                $departmentoptions += $options_formatted; // Add custom field options to the form options
+            } else {
+                 debugging('Custom profile field "department" found but has no options defined.', DEBUG_DEVELOPER);
+            }
+
+             // Get the user's current value for this field
+             // profile_load_custom_fields loads custom field data onto the $USER object
+             profile_load_custom_fields($USER);
+             // Custom field data is accessible via $USER->profile[shortname]
+             if (isset($USER->profile['department']) && $USER->profile['department'] !== '') {
+                  $currentdepartment = $USER->profile['department'];
+             }
+
+
         } else {
-            // Handle case where the field does not exist or is not a menu type
             debugging('Custom profile field "department" not found or is not a menu type.', DEBUG_DEVELOPER);
-            // Optionally add a warning message to the form or hide the field
-            // $mform->addElement('static', 'department_warning', get_string('departmentfieldmissing', 'local_presentyou'), get_string('configurecustomfields', 'local_presentyou')); // Need configurecustomfields string
+            // Add a warning if the field is missing or misconfigured
+            $mform->addElement('static', 'department_warning', get_string('departmentfieldmissing', 'local_presentyou'), get_string('configurecustomfields', 'local_presentyou')); // configurecustomfields needs to be added to lang
         }
 
-        // Only add the element if we have options (at least the empty one)
-        if (!empty($departmentoptions)) {
+
+        // Only add the element if the field definition was found and it's a menu type
+        // and we have options (at least the empty one)
+        if ($this->departmentfield && $this->departmentfield->datatype === 'menu' && !empty($departmentoptions)) {
              $mform->addElement('select', 'department', get_string('department', 'local_presentyou'), $departmentoptions);
              $mform->addRule('department', get_string('required'), 'required');
-             // Use the field object to get the user's current value if preferred, or stick with get_user_preferences
-             // $currentdepartment = $departmentfield ? $departmentfield->get_user_value($USER->id) : '';
-             $mform->setDefault('department', get_user_preferences('department', '', $USER->id)); // Added $USER->id
+             $mform->setDefault('department', $currentdepartment); // Use the retrieved current value
         }
 
 
         // --- Position Select ---
         $positionoptions = ['' => get_string('selectposition', 'local_presentyou')]; // Start with empty option
-        // Get the custom position field
-        $positionfield = manager::get_custom_field('position');
+        $currentposition = '';
 
-        if ($positionfield && $positionfield->get_field_type() === 'menu') {
-            // Check if it's a menu type field and get its options
-            $fieldoptions = $positionfield->get_field_options(); // This method gets the value => label array
-            if (!empty($fieldoptions)) {
-                $positionoptions += $fieldoptions; // Add custom field options to the form options
-            } else {
-                debugging('Custom profile field "position" found but has no options.', DEBUG_DEVELOPER);
-            }
+        // Get the custom position field definition from the database
+        $this->positionfield = $DB->get_record('user_info_field', array('shortname' => 'position'));
+
+        if ($this->positionfield && $this->positionfield->datatype === 'menu') {
+             $fieldoptions = explode("\n", $this->positionfield->param1);
+             $options_formatted = [];
+             foreach ($fieldoptions as $option) {
+                  $option = trim($option);
+                  if ($option !== '') {
+                      $options_formatted[$option] = $option;
+                  }
+             }
+
+             if (!empty($options_formatted)) {
+                 $positionoptions += $options_formatted; // Add custom field options to the form options
+             } else {
+                 debugging('Custom profile field "position" found but has no options defined.', DEBUG_DEVELOPER);
+             }
+
+             // User profile data is already loaded onto $USER by profile_load_custom_fields above
+             if (isset($USER->profile['position']) && $USER->profile['position'] !== '') {
+                  $currentposition = $USER->profile['position'];
+             }
+
         } else {
              debugging('Custom profile field "position" not found or is not a menu type.', DEBUG_DEVELOPER);
-             // $mform->addElement('static', 'position_warning', get_string('positionfieldmissing', 'local_presentyou'), get_string('configurecustomfields', 'local_presentyou'));
+             $mform->addElement('static', 'position_warning', get_string('positionfieldmissing', 'local_presentyou'), get_string('configurecustomfields', 'local_presentyou')); // configurecustomfields needs to be added to lang
         }
 
-         // Only add the element if we have options (at least the empty one)
-         if (!empty($positionoptions)) {
+         // Only add the element if the field definition was found and it's a menu type
+         // and we have options (at least the empty one)
+         if ($this->positionfield && $this->positionfield->datatype === 'menu' && !empty($positionoptions)) {
              $mform->addElement('select', 'position', get_string('position', 'local_presentyou'), $positionoptions);
              $mform->addRule('position', get_string('required'), 'required');
-             // $currentposition = $positionfield ? $positionfield->get_user_value($USER->id) : '';
-             $mform->setDefault('position', get_user_preferences('position', '', $USER->id)); // Added $USER->id
+             $mform->setDefault('position', $currentposition); // Use the retrieved current value
          }
 
 
@@ -102,8 +139,9 @@ class complete_profile_form extends \moodleform {
 
         // --- Buttons ---
         $buttonarray = [];
-        // Conditionally add buttons only if at least one field was added (implies fields exist)
-        if (!empty($departmentoptions) || !empty($positionoptions)) {
+        // Conditionally add buttons only if at least one required field was successfully added
+        if (($this->departmentfield && $this->departmentfield->datatype === 'menu' && !empty($departmentoptions)) ||
+            ($this->positionfield && $this->positionfield->datatype === 'menu' && !empty($positionoptions))) {
             $buttonarray[] = $mform->createElement('submit', 'submitbutton', get_string('confirm', 'local_presentyou'));
         }
          // Always provide a logout option even if fields are missing/incorrectly configured
@@ -113,50 +151,67 @@ class complete_profile_form extends \moodleform {
     }
 
     /**
-     * Custom validation rules (optional but good practice).
+     * Custom validation rules.
      * Ensure that the submitted values match the expected values from the profile fields.
-     * Although Moodle's select element handles this somewhat, this adds an extra layer.
+     * We need to re-fetch fields here or ensure they are available.
      */
     public function validation($data, $files) {
+        global $DB; // Need DB access for validation against field options
+
         $errors = parent::validation($data, $files);
 
-        // Get the custom field objects using the correct API.
-        // It's important to fetch these again here as the form object's definition
-        // is run when the form is constructed, but validation is a separate step.
-        $departmentfield = manager::get_custom_field('department');
-        $positionfield = manager::get_custom_field('position');
+        // Re-fetch field definitions if they weren't stored or if validation is called separately
+        if (!$this->departmentfield) {
+            $this->departmentfield = $DB->get_record('user_info_field', array('shortname' => 'department'));
+        }
+        if (!$this->positionfield) {
+            $this->positionfield = $DB->get_record('user_info_field', array('shortname' => 'position'));
+        }
+
 
         // Validate the submitted values against the allowed options for the profile fields.
-        // Use the field object's is_valid_value method.
+        // For menu type, the value should be one of the options defined in param1.
 
         // Only validate if the field exists and is a menu type
-        if ($departmentfield && $departmentfield->get_field_type() === 'menu') {
-             if (isset($data['department']) && !empty($data['department'])) {
-                 if (!$departmentfield->is_valid_value($data['department'])) {
+        if ($this->departmentfield && $this->departmentfield->datatype === 'menu') {
+             if (isset($data['department']) && $data['department'] !== '') { // Check if value is set and not the empty option
+                 $fieldoptions = explode("\n", $this->departmentfield->param1);
+                 $validoptions = [];
+                 foreach ($fieldoptions as $option) {
+                     $option = trim($option);
+                     if ($option !== '') {
+                         $validoptions[] = $option;
+                     }
+                 }
+                 if (!in_array($data['department'], $validoptions)) {
                      $errors['department'] = get_string('invalidselection', 'local_presentyou');
                  }
              }
              // The 'required' rule added in definition() handles the empty case validation.
         } else {
-             // If the custom field is missing or wrong type, we cannot validate the selection.
-             // This scenario might need a different error handling depending on requirements.
-             // For now, we just won't run the is_valid_value check.
-             // The complete_profile.php page should ideally also check for missing fields before saving.
-             debugging('Validation skipped for department: custom field missing or not menu type.', DEBUG_DEVELOPER);
+             // If the custom field is missing or wrong type, we cannot validate the selection against it.
+             debugging('Validation skipped for department: custom field missing or not menu type during validation.', DEBUG_DEVELOPER);
         }
 
 
-         if ($positionfield && $positionfield->get_field_type() === 'menu') {
-             if (isset($data['position']) && !empty($data['position'])) {
-                 if (!$positionfield->is_valid_value($data['position'])) {
-                     $errors['position'] = get_string('invalidselection', 'local_presentyou');
-                 }
-             }
-             // The 'required' rule added in definition() handles the empty case validation.
+         if ($this->positionfield && $this->positionfield->datatype === 'menu') {
+              if (isset($data['position']) && $data['position'] !== '') { // Check if value is set and not the empty option
+                  $fieldoptions = explode("\n", $this->positionfield->param1);
+                  $validoptions = [];
+                  foreach ($fieldoptions as $option) {
+                      $option = trim($option);
+                      if ($option !== '') {
+                          $validoptions[] = $option;
+                      }
+                  }
+                  if (!in_array($data['position'], $validoptions)) {
+                      $errors['position'] = get_string('invalidselection', 'local_presentyou');
+                  }
+              }
+              // The 'required' rule handles the empty case.
          } else {
-             debugging('Validation skipped for position: custom field missing or not menu type.', DEBUG_DEVELOPER);
+             debugging('Validation skipped for position: custom field missing or not menu type during validation.', DEBUG_DEVELOPER);
          }
-
 
         return $errors;
     }
