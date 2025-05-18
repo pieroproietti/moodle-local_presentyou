@@ -29,8 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 
 /**
- * Middleware to check if the user's department and position are set.
- * If not, redirect them to the profile completion page.
+ * Middleware: Dopo il login ci reindirizza su /local/presentyou/complete_profile.php
  *
  * @param \moodle_page $PAGE The current Moodle page object.
  * @param \core_renderer $OUTPUT The current Moodle output object.
@@ -70,11 +69,4 @@ function local_presentyou_middleware(\moodle_page $PAGE, \core_renderer $OUTPUT)
             $urltogo = new moodle_url($completionpageurl, ['redirect' => $PAGE->url->out(false)]);
             redirect($urltogo);
        }
-
 }
-
-// Nota: Non è necessario controllare l'esistenza dei campi profilo qui
-// dato che l'obiettivo è reindirizzare SEMPRE. Eventuali problemi con i campi
-// si manifesteranno (più correttamente) nella pagina complete_profile.php.
-// Ho rimosso quel controllo per questa specifica logica "reindirizza sempre".
-
