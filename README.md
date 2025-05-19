@@ -1,6 +1,6 @@
 # README
 
-Sto scrivendo una coppia di plugin gemelli, denominati: `local_presentyou` e `[local_modalpresentyou](https://github.com/pieroproietti/moodle-local_modalpresentyou)`, entrambi di tipo `local` per Moodle 5.+, usando Visual Studio Code e l'intelligenza artificiale.
+Sto scrivendo una coppia di plugin gemelli, denominati: `local_presentyou` e [local_modalpresentyou](https://github.com/pieroproietti/moodle-local_modalpresentyou), entrambi di tipo `local` per Moodle 5.+, usando Visual Studio Code e l'intelligenza artificiale.
 
 Mi occorre che all'utente, ad ogni nuovo login, sia presentato un form con due campi `department` e `position` come selectbox, e due bottoni: `Confirm` e `Logout`.
 
