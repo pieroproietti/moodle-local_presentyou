@@ -5,8 +5,11 @@ presentyou/
 ├── classes/
 │   ├── form/
 │   │   └── complete_profile_form.php
-│   └── privacy/
-│       └── provider.php
+│   ├── privacy/
+│   │   └── provider.php
+│   └── observer.php
+├── db/
+│   └── events.php
 ├── lang/
 │   ├── en/
 │   │   └── local_presentyou.php
@@ -16,20 +19,22 @@ presentyou/
 ├── SUNTO.md
 ├── complete_profile.php
 ├── index.php
-├── middleware.php
 ├── sunto.py
+├── test.php
 └── version.php
 ```
 
 # File PHP trovati (percorsi relativi)
 
 * classes/form/complete_profile_form.php
+* classes/observer.php
 * classes/privacy/provider.php
 * complete_profile.php
+* db/events.php
 * index.php
 * lang/en/local_presentyou.php
 * lang/it/local_presentyou.php
-* middleware.php
+* test.php
 * version.php
 
 # Contenuto dei file PHP
@@ -257,7 +262,72 @@ class complete_profile_form extends \moodleform {
 }
 ```
 
-2. classes/privacy/provider.php
+2. classes/observer.php
+
+```php
+<?php
+namespace local_presentyou;
+
+defined('MOODLE_INTERNAL') || die();
+
+class observer {
+    public static function before_http_headers(\core\hook\output\before_http_headers $hook) {
+        global $USER, $PAGE;
+
+        // Skip if not logged in or guest user
+        if (!isloggedin() || isguestuser()) {
+            return;
+        }
+
+        // Skip during CLI execution
+        if (CLI_SCRIPT) {
+            return;
+        }
+
+        error_log("OBSERVER: Method user_loggedin called");
+
+        // Get current URL without parameters for comparison
+        $currenturl = $PAGE->url->out_as_local_url(false);
+        $targeturl = new \moodle_url('/local/presentyou/complete_profile.php');
+        $loginurl = new \moodle_url('/login/index.php');
+        $logouturl = new \moodle_url('/login/logout.php');
+        
+        // Skip if already on target pages
+        if (strpos($currenturl, $targeturl->out_as_local_url(false)) !== false) {
+            return;
+        }
+        
+        if (strpos($currenturl, $loginurl->out_as_local_url(false)) !== false) {
+            return;
+        }
+        
+        if (strpos($currenturl, $logouturl->out_as_local_url(false)) !== false) {
+            return;
+        }
+
+        // Load profile fields and check completion
+        profile_load_custom_fields($USER);
+        $profilecomplete = !empty($USER->profile['department']) && !empty($USER->profile['position']);
+
+        if (!$profilecomplete) {
+            redirect($targeturl);
+        }
+    }
+
+    public static function user_loggedin(\core\event\user_loggedin $event) {
+        global $USER;
+        
+        // Force profile check immediately after login
+        profile_load_custom_fields($USER);
+        if (empty($USER->profile['department']) || empty($USER->profile['position'])) {
+            redirect(new \moodle_url('/local/presentyou/complete_profile.php'));
+        }
+    }
+}
+
+```
+
+3. classes/privacy/provider.php
 
 ```php
 <?php
@@ -302,7 +372,7 @@ class provider implements null_provider {
 
 ```
 
-3. complete_profile.php
+4. complete_profile.php
 
 ```php
 <?php
@@ -516,7 +586,29 @@ echo $OUTPUT->footer();
 // $string['configurecustomfields'] = 'Please contact an administrator to configure the required custom profile fields.';
 ```
 
-4. index.php
+5. db/events.php
+
+```php
+<?php
+defined('MOODLE_INTERNAL') || die();
+
+$observers = array(
+    array(
+        'eventname' => '\core\event\user_loggedin',
+        'callback' => 'local_presentyou\observer::user_loggedin',
+        'internal' => false,
+        'priority' => 1000,
+    ),
+    array(
+        'eventname' => '\core\event\before_http_headers',
+        'callback' => 'local_presentyou\observer::before_http_headers',
+        'internal' => false,
+    ),
+);
+
+```
+
+6. index.php
 
 ```php
 <?php
@@ -548,7 +640,7 @@ echo $OUTPUT->footer();
 
 ```
 
-5. lang/en/local_presentyou.php
+7. lang/en/local_presentyou.php
 
 ```php
 <?php
@@ -598,7 +690,7 @@ $string['positionfieldmissing'] = 'Position profile field is missing or misconfi
 $string['configurecustomfields'] = 'Please contact an administrator to configure the required custom profile fields.';
 ```
 
-6. lang/it/local_presentyou.php
+8. lang/it/local_presentyou.php
 
 ```php
 <?php
@@ -648,87 +740,20 @@ $string['positionfieldmissing'] = 'Il capor Position del profilo è assente o no
 $string['configurecustomfields'] = 'Per favore contatta l\'amministratore del sito per configurare il campo custom profile richiesto.';
 ```
 
-7. middleware.php
+9. test.php
 
 ```php
-<?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+ <?php
+    // Questo file serve solo a verificare se Apache/PHP può eseguire script in questa directory.
+    echo "Test file executed successfully!";
 
-/**
- * TODO describe file middleware
- *
- * @package    local_presentyou
- * @copyright  2025 Piero Proietti <piero.proietti@gmail.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-// require('../../config.php'); gia caricato
-
-// No direct access.
-defined('MOODLE_INTERNAL') || die();
-
-
-/**
- * Middleware: dopo il login ci reindirizza SEMPRE 
- *             su /local/presentyou/complete_profile.php
- *             per qualche motivo NON succede!
- *
- * @param \moodle_page $PAGE The current Moodle page object.
- * @param \core_renderer $OUTPUT The current Moodle output object.
- */
-function local_presentyou_middleware(\moodle_page $PAGE, \core_renderer $OUTPUT) {
-    global $CFG, $USER;
-
-    // Only apply this logic if a user is logged in.
-    if (!isloggedin() || isguestuser()) { // <<< Aggiunto controllo 'isguestuser()'
-        return;
-    }
-    // Define the URL of our profile completion page.
-    $completionpageurl = new moodle_url('/local/presentyou/complete_profile.php');
+    // Aggiungiamo un log per confermare l'esecuzione anche nei log di Apache/PHP
+    error_log("DEBUG_PRESENTYOU_TEST: test.php file executed from local/presentyou/", E_USER_NOTICE);
+?>
     
-    // Get the URLs of pages we should NOT interrupt.
-    $logoutpageurl = new moodle_url('/login/logout.php');
-    $selfregistrationurl = new moodle_url('/login/signup.php');
-    $forgotpasswordurl = new moodle_url('/login/forgot_password.php');
-    $confirmemailurl = new moodle_url('/login/confirm.php');
-    $loginpageurl = new moodle_url('/login/index.php'); // Non reindirizzare dalla pagina di login stessa
-
-    // Check if the user is logged in, is NOT a guest,
-    // AND they are NOT already on the completion page,
-    // AND they are NOT trying to access any of the excluded auth-related pages.
-    // In TUTTI gli altri casi, reindirizza alla pagina di completamento profilo.
-    if (isloggedin() && !isguestuser() &&
-        !$PAGE->url->equals($completionpageurl, true) &&
-        !$PAGE->url->equals($logoutpageurl, true) &&
-        !$PAGE->url->equals($selfregistrationurl, true) &&
-        !$PAGE->url->equals($forgotpasswordurl, true) &&
-        !$PAGE->url->equals($confirmemailurl, true) &&
-        !$PAGE->url->equals($loginpageurl, true)
-       ) {
-
-            // Reindirizza l'utente alla pagina di completamento profilo.
-            // Salviamo l'URL originale come parametro 'redirect' - utile per complete_profile.php DOPO il salvataggio.
-            $urltogo = new moodle_url($completionpageurl, ['redirect' => $PAGE->url->out(false)]);
-            redirect($urltogo);
-       }
-}
-
 ```
 
-8. version.php
+10. version.php
 
 ```php
 <?php
@@ -758,15 +783,12 @@ function local_presentyou_middleware(\moodle_page $PAGE, \core_renderer $OUTPUT)
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_presentyou';
-$plugin->version = 2025051801; // YYYYMMDD Revision - Update this when you make changes
-$plugin->requires = 2025041400.05; // Moodle 5+ last version
+$plugin->version = 2025051907; // YYYYMMDD Revision - Update this when you make changes
+$plugin->requires = 2025041400; // Moodle 5+
 $plugin->maturity = MATURITY_STABLE; // MATURITY_ALPHA, MATURITY_BETA, MATURITY_RC, MATURITY_STABLE
 $plugin->release = 'v1.0';
 $departmentfieldmissing= 'Manca il campo del Dipartimento';
 $positionfieldmissing= 'Manca il campo della Posizione';
-
-// This line tells Moodle to load our middleware.php file on every request.
-$plugin->middlewarefile = true;
 
 ```
 
