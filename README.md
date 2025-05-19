@@ -14,17 +14,22 @@ presentyou/
 ├── classes/
 │   ├── form/
 │   │   └── complete_profile_form.php
-│   └── privacy/
-│       └── provider.php
+│   ├── privacy/
+│   │   └── provider.php
+│   └── observer.php
+├── db/
+│   └── events.php
 ├── lang/
 │   ├── en/
 │   │   └── local_presentyou.php
 │   └── it/
 │       └── local_presentyou.php
+├── README.md
+├── SUNTO.md
 ├── complete_profile.php
 ├── index.php
-├── middleware.php
 ├── sunto.py
+├── test.php
 └── version.php
 ```
 ## Campi personalizzati
