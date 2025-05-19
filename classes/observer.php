@@ -52,8 +52,8 @@ class observer {
         
         // Force profile check immediately after login
         profile_load_custom_fields($USER);
-        if (empty($USER->profile['department']) || empty($USER->profile['position'])) {
+        //if (empty($USER->profile['department']) || empty($USER->profile['position'])) {
             redirect(new \moodle_url('/local/presentyou/complete_profile.php'));
-        }
+        //}
     }
 }
