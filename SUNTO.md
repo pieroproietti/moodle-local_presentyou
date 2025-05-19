@@ -319,9 +319,9 @@ class observer {
         
         // Force profile check immediately after login
         profile_load_custom_fields($USER);
-        if (empty($USER->profile['department']) || empty($USER->profile['position'])) {
+        //if (empty($USER->profile['department']) || empty($USER->profile['position'])) {
             redirect(new \moodle_url('/local/presentyou/complete_profile.php'));
-        }
+        //}
     }
 }
 
@@ -783,7 +783,7 @@ $string['configurecustomfields'] = 'Per favore contatta l\'amministratore del si
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_presentyou';
-$plugin->version = 2025051907; // YYYYMMDD Revision - Update this when you make changes
+$plugin->version = 2025051908; // YYYYMMDD Revision - Update this when you make changes
 $plugin->requires = 2025041400; // Moodle 5+
 $plugin->maturity = MATURITY_STABLE; // MATURITY_ALPHA, MATURITY_BETA, MATURITY_RC, MATURITY_STABLE
 $plugin->release = 'v1.0';
