@@ -1,7 +1,10 @@
-# Struttura della cartella 'presentyou'
+# Struttura della cartella 'moodle-local_presentyou'
 
 ```ascii
-presentyou/
+moodle-local_presentyou/
+├── bin/
+│   ├── sunto
+│   └── sunto.py
 ├── classes/
 │   ├── form/
 │   │   └── complete_profile_form.php
@@ -16,10 +19,8 @@ presentyou/
 │   └── it/
 │       └── local_presentyou.php
 ├── README.md
-├── SUNTO.md
 ├── complete_profile.php
 ├── index.php
-├── sunto.py
 ├── test.php
 └── version.php
 ```

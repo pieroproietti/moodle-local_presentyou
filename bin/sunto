@@ -1,0 +1,4 @@
+#!/bin/bash
+
+./bin/sunto.py .
+scp SUNTO.md artisan@192.168.1.2:/home/artisan
